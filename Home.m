@@ -174,7 +174,7 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 % set (handles.text5, 'String', 'Winda Mariana'); %
 % msgbox('ini button') //ini menampilkan message box % 
-strGui2 = ('E:\KULIAH\semester5\TA I\REF\FIX\KERJA TA 1\Source Code\Embedding.fig'); %Set your GUI file's location
+strGui2 = ('E:\KULIAH\semester6\TA 2\Code_TA-02\Embedding.fig'); %Set your GUI file's location
 open (strGui2); %Open the new GUI 
 closereq;       %Close the actual GUI
 
@@ -186,7 +186,7 @@ function pushbutton2_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-strGui3 = ('E:\KULIAH\semester5\TA I\REF\FIX\KERJA TA 1\Source Code\Extraction.fig'); %Set your GUI file's location
+strGui3 = ('E:\KULIAH\semester6\TA 2\Code_TA-02\Extraction.fig'); %Set your GUI file's location
 open (strGui3); %Open the new GUI 
 closereq;       %Close the actual GUI
 

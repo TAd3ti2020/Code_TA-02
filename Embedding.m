@@ -22,7 +22,7 @@ function varargout = Embedding(varargin)
 
 % Edit the above text to modify the response to help Embedding
 
-% Last Modified by GUIDE v2.5 31-Jan-2021 15:54:41
+% Last Modified by GUIDE v2.5 23-Feb-2021 00:41:10
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -78,13 +78,18 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global x;
-[a, b] = uigetfile();
-x = strcat(b, a);
-x = imread(x);
-axes(handles.axes1);
-imshow(x);
-
+[filename pathname] = uigetfile({'*.mp3'}, 'Select File');
+ fullpathname = strcat (pathname, filename);
+ [data,fs] = audioread(fullpathname);
+size(filename);
+length(data)
+whos data;
+whos fs;
+TotalTime = length(data)./fs;
+t = 0:TotalTime/(length(data)):TotalTime-TotalTime/length(data);
+plot(t,data)
+ 
+ 
 
 % --- Executes on button press in pushbutton2.
 function pushbutton2_Callback(hObject, eventdata, handles)
@@ -93,7 +98,7 @@ function pushbutton2_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 global y;
-[a, b] = uigetfile();
+[a, b] = uigetfile({'*.png'});
 y = strcat(b, a);
 y = imread(y);
 axes(handles.axes2);
@@ -107,7 +112,7 @@ function pushbutton3_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 global z;
-[a, b] = uigetfile();
+[a, b] = uigetfile({'*.png'});
 z = strcat(b, a);
 z = imread(z);
 axes(handles.axes3);
