@@ -22,7 +22,7 @@ function varargout = Home(varargin)
 
 % Edit the above text to modify the response to help Home
 
-% Last Modified by GUIDE v2.5 31-Jan-2021 16:38:35
+% Last Modified by GUIDE v2.5 27-Mar-2021 14:09:09
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -196,3 +196,4 @@ function pushbutton3_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+closereq();

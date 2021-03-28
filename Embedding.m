@@ -22,7 +22,7 @@ function varargout = Embedding(varargin)
 
 % Edit the above text to modify the response to help Embedding
 
-% Last Modified by GUIDE v2.5 23-Feb-2021 00:41:10
+% Last Modified by GUIDE v2.5 28-Mar-2021 16:53:37
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -71,71 +71,104 @@ function varargout = Embedding_OutputFcn(hObject, eventdata, handles)
 
 % Get default command line output from handles structure
 varargout{1} = handles.output;
-
-
 % --- Executes on button press in pushbutton1.
-function pushbutton1_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-[filename pathname] = uigetfile({'*.mp3'}, 'Select File');
- fullpathname = strcat (pathname, filename);
- [data,fs] = audioread(fullpathname);
-size(filename);
-length(data)
-whos data;
-whos fs;
-TotalTime = length(data)./fs;
-t = 0:TotalTime/(length(data)):TotalTime-TotalTime/length(data);
-plot(t,data)
- 
- 
 
-% --- Executes on button press in pushbutton2.
-function pushbutton2_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton2 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+%------------------------------------------------------------------------------------------------%
+function Browse_Audio(hObject, eventdata, handles)
+%persiapan file audio
+[filename, pathname] = uigetfile({'*.wav'}, 'Pilih File');
+fullpathname = fullfile (pathname, filename);
+[x, fs] = audioread(fullpathname);
 
-global y;
+%check apakah user menekan cancel pada dialog
+if isequal(filename,0) || isequal(pathname,0)
+uiwait(msgbox ('User menekan Cancel','failed','modal') )
+hold on;
+else
+uiwait(msgbox('Audio sudah dipilih','sucess','modal'));
+hold off;
+        x = x (:,1)
+        N = length(x);
+        t = (0:N-1)/fs; 
+
+         %plot
+         axes(handles.axes6);
+         plot(t,x)
+         grid on
+         xlabel('Time (s)')
+         ylabel('Amplitudo')
+end
+handles.output = hObject;
+handles.fullpathname = fullpathname;
+handles.x = x;
+guidata(hObject, handles);
+%------------------------------------------------------------------------------------------------%
+
+%------------------------------------------------------------------------------------------------%
+function Browse_Watermark1(hObject, eventdata, handles)
+global watermark1;
 [a, b] = uigetfile({'*.png'});
-y = strcat(b, a);
-y = imread(y);
+watermark1 = strcat(b, a);
+watermark1 = imread(watermark1);
 axes(handles.axes2);
-imshow(y);
+imshow(watermark1);
+
+handles.watermark1 = watermark1;
+guidata(hObject, handles);
+%------------------------------------------------------------------------------------------------%
 
 
-% --- Executes on button press in pushbutton3.
-function pushbutton3_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton3 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+%------------------------------------------------------------------------------------------------%
+function Browse_Watermark2(hObject, eventdata, handles)
+global watermark2;
+[c, d] = uigetfile({'*.png'});
+watermark2 = strcat(d, c);
+watermark2 = imread(watermark2);
+axes(handles.axes7);
+imshow(watermark2);
 
-global z;
-[a, b] = uigetfile({'*.png'});
-z = strcat(b, a);
-z = imread(z);
-axes(handles.axes3);
-imshow(z);
-
+handles.watermark2 = watermark2;
+guidata(hObject, handles);
 
 
-% --- Executes on button press in pushbutton4.
-function pushbutton4_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton4 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+%------------------------------------------------------------------------------------------------%
+function Embed(hObject, eventdata, handles)
+if isfield(handles, 'fullpathname')
+ %hamming window
+sr =  44100; %sampling rate
+w = 512; %window size
+T = w/sr; %period
+% t is an array of times at which the hamming function is evaluated
+t = linspace(0, 1, 44100);
+twindow = t(1:3000);
+hamming = 0.54 - 0.46 * cos((2 * pi * twindow)/T);
+axes(handles.axes9);
+plot(hamming);    
+end
+%------------------------------------------------------------------------------------------------%
 
 
-% --- Executes on button press in pushbutton5.
-function pushbutton5_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton5 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+%------------------------------------------------------------------------------------------------%.
+function Save_Audio(hObject, eventdata, handles)
+% menampilkan menu save file
+[filename, pathname] = uiputfile('*.wav');
+% jika ada file yang disimpan maka akan mengeksekusi:
+if ~isequal(filename,0)
+    % membaca variabel Fs
+    Fs = handles.Fs;
+    audiowatermarked = handles.audiowatermarked;
+    % menyimpan file sinyal suara
+    audiowrite(fullfile(pathname,filename),audiowatermarked,Fs)
+else
+    % jika tidak ada file yang disimpan maka akan kembali
+    return
+end
+%------------------------------------------------------------------------------------------------%
 
 
-% --- Executes on button press in pushbutton6.
-function pushbutton6_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton6 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+%------------------------------------------------------------------------------------------------%
+function Back_Menu(hObject, eventdata, handles)
+strGui4 = ('E:\KULIAH\semester6\TA 2\Code_TA-02\Home.fig'); %Lokasi GUI
+open (strGui4);
+closereq;
+%------------------------------------------------------------------------------------------------%
