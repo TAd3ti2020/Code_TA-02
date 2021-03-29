@@ -77,9 +77,9 @@ varargout{1} = handles.output;
 %Browse Audio%
 function Browse_Audio(hObject, eventdata, handles)
 %persiapan file audio
-[filename, pathname] = uigetfile({'*.wav'});
-fullpathname = fullfile (pathname, filename);
-[X, Fs] = audioread(fullpathname);
+[X, fs] = uigetfile({'*.wav'});
+fullpathname = fullfile (f, filename);
+[X, fs] = audioread(fullpathname);
 
 %check apakah user menekan cancel pada dialog
 if isequal(filename,0) || isequal(pathname,0)
@@ -90,7 +90,7 @@ uiwait(msgbox('Audio sudah dipilih','sucess','modal'));
 hold off;
         X = X (:,1)
         N = length(X);
-        t = (0:N-1)/Fs; 
+        t = (0:N-1)/fs; 
 
          %plot
          axes(handles.axes6);
@@ -101,8 +101,7 @@ hold off;
 end
 handles.output = hObject;
 handles.fullpathname = fullpathname;
-handles.Fs = Fs;
-handles.X = X;
+handles.fs = fs;
 guidata(hObject, handles);
 %------------------------------------------------------------------------------------------------%
 
@@ -141,9 +140,7 @@ function Embed(hObject, eventdata, handles)
 if isfield(handles, 'fullpathname')
 %Membagi sinyal audio ke dalam frame
 f_d = 0.00144; %durasi per frame
-Fs = handles.Fs;
-X = handles.X;
-f_size = round(f_d * Fs); % sample per frame
+f_size = round(f_d * fs); % sample per frame
 n = length(X);
 n_f = floor(n/f_size);  %jumlah frame
 temp = 0;
@@ -203,11 +200,9 @@ end
 
 
 %persiapan watermark
-watermark1 = handles.watermark1;
-watermark2 = handles.watermark2;
-
+global watermark1;
+global watermark2;
 Gambar = [watermark1 watermark2];
-
 ste_index;
 voice_frame2 = [];
 for j = 0 : length(Gambar)/16
@@ -264,7 +259,7 @@ audiojoin_baru = reshape(audio_join.',1,[]);
 %--------------------------------------------------------------------------------------------------------------------------- 
 %membuat audio baru(audiowrite)  
 %audiowrite('original.wav', frames_baru, fs); untuk membuat file audio original
-audiowrite('audio-berwatermark.wav', audiojoin_baru, Fs);
+audiowrite('audio-berwatermark.wav', audiojoin_baru, fs);
 axes(handles.axes9);
 plot(audiojoin_baru); %plot audio berwatermark
 end
