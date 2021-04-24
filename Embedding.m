@@ -79,7 +79,7 @@ function Browse_Audio(hObject, eventdata, handles)
 %persiapan file audio
 [filename, pathname] = uigetfile({'*.wav'});
 fullpathname = fullfile (pathname, filename);
-[X, Fs] = audioread(fullpathname);
+[X, Fs] = audioread(fullpathname);  %Fs adalah sampling
 
 %check apakah user menekan cancel pada dialog
 if isequal(filename,0) || isequal(pathname,0)
@@ -111,7 +111,7 @@ guidata(hObject, handles);
 function Browse_Watermark1(hObject, eventdata, handles)
 global watermark1;
 [a, b] = uigetfile({'*.png'});
-watermark1 = strcat(b, a);
+watermark1 = strcat(b, a);  
 watermark1 = imread(watermark1);
 axes(handles.axes2);
 imshow(watermark1);
@@ -152,7 +152,6 @@ for i = 1 : n_f
    temp = temp + f_size;
 end
 
-
 %hamming window
 wintype = 'hamming';
 winlen = 32;
@@ -184,7 +183,7 @@ ste_batas = max(ste)/2; %Tracehold ditentukan
 zcc_batas = max(zc)/1; %Tracehold ditentukan
 temp1 = 1;
 temp2 = 1;
-ste_index = [];
+ste_index = []; %menyediakan ruang kosong
 voice_frame = [];
 unvoice_frame = [];
 for i = 1 : length(ste)
@@ -206,10 +205,9 @@ end
 watermark1 = handles.watermark1;
 watermark2 = handles.watermark2;
 
-Gambar = [watermark1 watermark2];
-
+Gambar = [watermark1 watermark2]; %gambar dimasukkan ke dalam array
 ste_index;
-voice_frame2 = [];
+voice_frame2 = [];  
 for j = 0 : length(Gambar)/16
     for i = 1 : length(voice_frame(:,1))    
         x = voice_frame(i,1:16);        
@@ -218,9 +216,9 @@ for j = 0 : length(Gambar)/16
         [Sn,Un,Vn] = embeed_function(x,y);  %Fungsi DCT dan SVD dari file Embeed Function
         
         %koresponden_Un = koleksi Un   
-        U = reshape(Un.',1,[]);
-        koresponden_Un(i,17:32) = U;
-        
+        U = reshape(Un.',1,[]);     % Reshape digunakan untuk mengubah ukuran matriks
+        koresponden_Un(i,17:32) = U;    % untuk ekstraksi, U dan V digunakan untuk ekstraksi
+         
         %koresponden_Vn = Koleksi Vn
         V = reshape(Vn.',1,[]);
         koresponden_Vn(i,17:32) = V;
@@ -244,7 +242,7 @@ end
 
 %---------------------------------------------------------------------------------------------------------------------------  
 %menggabungkan voiced dan unvoiced frames menjadi audio_join
-audio_join = [];
+audio_join = [];    %di audio join inilah voiced dan unvoiced digabungkan
 temp1 = 1;
 temp2 = 1;
 for i = 1 : length(frames)    
@@ -264,9 +262,11 @@ audiojoin_baru = reshape(audio_join.',1,[]);
 %--------------------------------------------------------------------------------------------------------------------------- 
 %membuat audio baru(audiowrite)  
 %audiowrite('original.wav', frames_baru, fs); untuk membuat file audio original
-audiowrite('audio-berwatermark.wav', audiojoin_baru, Fs);
-axes(handles.axes9);
-plot(audiojoin_baru); %plot audio berwatermark
+audiowrite('audio-berwatermark.wav', audiojoin_baru, Fs);   %membuat audio berwatermark
+
+ %plot audio berwatermark
+         axes(handles.axes9);
+         plot(audiojoin_baru);
 end
 %------------------------------------------------------------------------------------------------%
 
@@ -283,7 +283,7 @@ if ~isequal(filename,0)
     % menyimpan file sinyal suara
     audiowrite(fullfile(pathname,filename),audiowatermarked,Fs)
 else
-    % jika tidak ada file yang disimpan maka akan kembali
+    % jika tidak ada file ya    ng disimpan maka akan kembali
     return
 end
 %------------------------------------------------------------------------------------------------%

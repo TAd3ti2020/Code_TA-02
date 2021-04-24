@@ -22,7 +22,7 @@ function varargout = Extraction(varargin)
 
 % Edit the above text to modify the response to help Extraction
 
-% Last Modified by GUIDE v2.5 31-Jan-2021 16:03:01
+% Last Modified by GUIDE v2.5 31-Mar-2021 14:55:29
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -86,6 +86,70 @@ function pushbutton2_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+%untuk ekstraksi
+
+if isfield(handles, 'fullpathname')
+%Membagi sinyal audio ke dalam frame
+f_d = 0.00144; %durasi per frame
+Fs = handles.Fs;
+X = handles.X;
+f_size = round(f_d * Fs); % sample per frame
+n = length(X);
+n_f = floor(n/f_size);  %jumlah frame
+temp = 0;
+for i = 1 : n_f
+   frames(i,:) = X(temp + 1 : temp + f_size);
+   temp = temp + f_size;
+end
+
+%hamming window
+wintype = 'hamming';
+winlen = 32;
+winamp = [0.5,1]*(1/winlen);
+
+
+%Hitung STE di setiap frame
+temp = 0;
+[a, b] = size(frames);
+for i = 1 : a
+   energy_frames(i,:) = energy(frames(i,:),wintype,winamp(2),winlen);
+   temp = temp + f_size;   
+end
+ste = sum(energy_frames.');
+ste = ste';
+
+%Hitung nilai ZCC di setiap frame
+temp = 0;
+for i = 1 : a
+   zcc_frames(i,:) = zerocross(frames(1,:),wintype,winamp(1),winlen);
+   temp = temp + f_size;   
+end
+zc = sum(zcc_frames.');
+zc = zc';
+
+%Menentukan voiced frames
+%Menentukan unvoiced frames
+ste_batas = max(ste)/2; %Tracehold ditentukan
+zcc_batas = max(zc)/1; %Tracehold ditentukan
+temp1 = 1;
+temp2 = 1;
+ste_index = []; %menyediakan ruang kosong
+voice_frame = [];
+unvoice_frame = [];
+for i = 1 : length(ste)
+    if ste(i) >= ste_batas
+        if zc(i) <= zcc_batas            
+            ste_index (i,1) = 1;          
+            voice_frame(temp1,:) = frames(i,:);
+            temp1 = temp1 + 1;          
+        end
+    else
+        ste_index(i,1) = 0;
+        unvoice_frame(temp2, :) = frames(i,:);
+        temp2 = temp2 + 1;        
+    end    
+end
+
 
 
 
@@ -101,3 +165,32 @@ function pushbutton4_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton4 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+%persiapan file audio
+[filename, pathname] = uigetfile({'*.wav'});
+fullpathname = fullfile (pathname, filename);
+[X, Fs] = audioread(fullpathname);  %Fs adalah sampling
+
+%check apakah user menekan cancel pada dialog
+if isequal(filename,0) || isequal(pathname,0)
+uiwait(msgbox ('User menekan Cancel','failed','modal') )
+hold on;
+else
+uiwait(msgbox('Audio sudah dipilih','sucess','modal'));
+hold off;
+        X = X (:,1)
+        N = length(X);
+        t = (0:N-1)/Fs; 
+
+         %plot
+         axes(handles.axes6);
+         plot(t,X)
+         grid on
+         xlabel('Time (s)')
+         ylabel('Amplitudo')
+end
+handles.output = hObject;
+handles.fullpathname = fullpathname;
+handles.Fs = Fs;
+handles.X = X;
+guidata(hObject, handles);
+%------------------------------------------------------------------------------------------------%
